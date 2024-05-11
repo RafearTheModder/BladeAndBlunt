@@ -208,8 +208,12 @@ private:
 	{
 		auto attackState = player->AsActorState()->GetAttackState();
 
-		if (playerCamera->bowZoomedIn) {
+		if (REL::Module::IsVR()) {
+		} else {
+			if (playerCamera->GetRuntimeData2().bowZoomedIn)
+			{
 			return false;
+			}
 		}
 
 		auto equippedWeapon = skyrim_cast<RE::TESObjectWEAP*>(player->GetEquippedObject(false));
@@ -237,9 +241,12 @@ private:
 	{
 		auto attackState = player->AsActorState()->GetAttackState();
 
-		if (playerCamera->bowZoomedIn) 
+		if (REL::Module::IsVR()) {
+		} else {
+			if (playerCamera->GetRuntimeData2().bowZoomedIn)
 		{
 			return false;
+			}
 		}
 
 		auto equippedWeapon = skyrim_cast<RE::TESObjectWEAP*>(player->GetEquippedObject(false));
