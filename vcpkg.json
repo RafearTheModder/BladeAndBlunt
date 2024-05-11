@@ -8,7 +8,8 @@
     "rapidcsv",
     "simpleini",
     "xbyak",
-    "clib-util"
+    "clib-util",
+    "directxtk"
   ],
   "license": "GPL-3.0-or-later",
   "vcpkg-configuration": {
