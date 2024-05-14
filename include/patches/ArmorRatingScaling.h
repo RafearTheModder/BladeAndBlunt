@@ -130,4 +130,60 @@ namespace ArmorRatingScaling
 		logger::info("armor rating SE hook installed");
 		return true;
 	}
+
+	bool InstallArmorRatingHookVR()
+	{// NOTE: Not 100% sure this patch is correct. Will need deep dive testing.
+		struct ratingPatch : Xbyak::CodeGenerator
+		{
+			ratingPatch(std::uintptr_t returnAddress)
+			{
+				Xbyak::Label funcLabel;
+				Xbyak::Label returnLabel;
+
+				movss(xmm0, ptr[rbp + 0x77]);
+				call(ptr[rip + funcLabel]);
+                movss(xmm1, xmm0);
+
+				jmp(ptr[rip + returnLabel]);
+
+				L(funcLabel);
+				dq(reinterpret_cast<std::uintptr_t>(AdjustArmorRating));
+
+				L(returnLabel);
+				dq(returnAddress);
+			}
+		};
+
+		struct ratingPatch2 : Xbyak::CodeGenerator
+		{
+			ratingPatch2(std::uintptr_t returnAddress)
+			{
+				Xbyak::Label funcLabel;
+				Xbyak::Label returnLabel;
+
+				movss(xmm0, xmm8);
+                sub(rsp, 0x20);
+				call(ptr[rip + funcLabel]);
+                add(rsp, 0x20);
+				movaps(xmm8, xmm0);
+
+				jmp(ptr[rip + returnLabel]);
+
+				L(funcLabel);
+				dq(reinterpret_cast<std::uintptr_t>(AdjustArmorRating));
+
+				L(returnLabel);
+				dq(returnAddress);
+			}
+		};
+
+		ratingPatch code1{ Hooks::armorRating1.address() + 0x123 };
+		ratingPatch2 code2{ Hooks::armorRating2.address() + 0x99 };
+
+		auto& trampoline = SKSE::GetTrampoline();
+		trampoline.write_branch<6>(Hooks::armorRating1.address() + 0x114, trampoline.allocate(code1));
+		trampoline.write_branch<6>(Hooks::armorRating2.address() + 0x7C, trampoline.allocate(code2));
+		logger::info("armor rating SE hook installed");
+		return true;
+	}
 }
