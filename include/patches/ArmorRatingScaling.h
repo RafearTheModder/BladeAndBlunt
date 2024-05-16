@@ -132,7 +132,7 @@ namespace ArmorRatingScaling
 	}
 
 	bool InstallArmorRatingHookVR()
-	{// NOTE: Not 100% sure this patch is correct. Will need deep dive testing.
+	{
 		struct ratingPatch : Xbyak::CodeGenerator
 		{
 			ratingPatch(std::uintptr_t returnAddress)
@@ -140,7 +140,7 @@ namespace ArmorRatingScaling
 				Xbyak::Label funcLabel;
 				Xbyak::Label returnLabel;
 
-				movss(xmm0, ptr[rbp + 0x77]);
+				movss(xmm0, ptr[rbp + 0x68]);
 				call(ptr[rip + funcLabel]);
                 movss(xmm1, xmm0);
 
