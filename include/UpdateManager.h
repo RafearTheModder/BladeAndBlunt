@@ -236,8 +236,6 @@ private:
 
 	static bool IsBowDrawNoZoomCheck(RE::PlayerCharacter* player, RE::PlayerCamera* playerCamera)
 	{
-		auto attackState = player->AsActorState()->GetAttackState();
-
 		if (playerCamera->GetRuntimeData2().bowZoomedIn)
 		{
 			return false;
@@ -248,24 +246,38 @@ private:
 			return false;
 		}
 
-		switch (attackState) {
-		case RE::ATTACK_STATE_ENUM::kBowDrawn:
-			{
-				if (equippedWeapon->GetWeaponType() == RE::WEAPON_TYPE::kBow) {
-					return true;
+		if (REL::Module::IsVR()) {
+			if (equippedWeapon->GetWeaponType() == RE::WEAPON_TYPE::kBow) {
+				auto vrNodeData = player->GetVRNodeData();
+				if (vrNodeData)
+				{
+					if ((vrNodeData->bowState == RE::VR_Bow_State::kArrowKnocked) && (vrNodeData->currentBowDrawAmount > 0.2))
+					{
+						return true;
+					}
 				}
-				break;
 			}
-		case RE::ATTACK_STATE_ENUM::kBowAttached:
-			{
-				if (equippedWeapon->GetWeaponType() == RE::WEAPON_TYPE::kBow) {
-					return true;
+		} else {
+			auto attackState = player->AsActorState()->GetAttackState();
+			switch (attackState) {
+			case RE::ATTACK_STATE_ENUM::kBowDrawn:
+				{
+					if (equippedWeapon->GetWeaponType() == RE::WEAPON_TYPE::kBow) {
+						return true;
+					}
+					break;
 				}
-				break;
-			}
-		default:
-			{
-				break;
+			case RE::ATTACK_STATE_ENUM::kBowAttached:
+				{
+					if (equippedWeapon->GetWeaponType() == RE::WEAPON_TYPE::kBow) {
+						return true;
+					}
+					break;
+				}
+			default:
+				{
+					break;
+				}
 			}
 		}
 		return false;
