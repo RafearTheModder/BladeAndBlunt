@@ -99,15 +99,10 @@ public:
 
 	static void ProcessHitEventForParry(RE::Actor* target, RE::Actor* aggressor)
 	{
-		// This code section appears to be causing crashes in VR...
-		if (!REL::Module::IsVR())
-		{
-			auto settings = Settings::GetSingleton();
-			if (Conditions::PlayerHasActiveMagicEffect(settings->MAG_ParryWindowEffect)) {
-				Conditions::ApplySpell(target, aggressor, settings->MAGParryStaggerSpell);
-			}
+		auto settings = Settings::GetSingleton();
+		if (Conditions::PlayerHasActiveMagicEffect(settings->MAG_ParryWindowEffect)) {
+			Conditions::ApplySpell(target, aggressor, settings->MAGParryStaggerSpell);
 		}
-		
 	}
 
 	static void ProcessHitEventForBlockStagger(RE::Actor* target, RE::Actor* aggressor)
