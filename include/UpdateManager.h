@@ -246,38 +246,25 @@ private:
 			return false;
 		}
 
-		if (REL::Module::IsVR()) {
-			if (equippedWeapon->GetWeaponType() == RE::WEAPON_TYPE::kBow) {
-				auto vrNodeData = player->GetVRNodeData();
-				if (vrNodeData)
-				{
-					if ((vrNodeData->bowState == RE::VR_Bow_State::kArrowKnocked) && (vrNodeData->currentBowDrawAmount > 0.2))
-					{
-						return true;
-					}
+		auto attackState = player->AsActorState()->GetAttackState();
+		switch (attackState) {
+		case RE::ATTACK_STATE_ENUM::kBowDrawn:
+			{
+				if (equippedWeapon->GetWeaponType() == RE::WEAPON_TYPE::kBow) {
+					return true;
 				}
+				break;
 			}
-		} else {
-			auto attackState = player->AsActorState()->GetAttackState();
-			switch (attackState) {
-			case RE::ATTACK_STATE_ENUM::kBowDrawn:
-				{
-					if (equippedWeapon->GetWeaponType() == RE::WEAPON_TYPE::kBow) {
-						return true;
-					}
-					break;
+		case RE::ATTACK_STATE_ENUM::kBowAttached:
+			{
+				if (equippedWeapon->GetWeaponType() == RE::WEAPON_TYPE::kBow) {
+					return true;
 				}
-			case RE::ATTACK_STATE_ENUM::kBowAttached:
-				{
-					if (equippedWeapon->GetWeaponType() == RE::WEAPON_TYPE::kBow) {
-						return true;
-					}
-					break;
-				}
-			default:
-				{
-					break;
-				}
+				break;
+			}
+		default:
+			{
+				break;
 			}
 		}
 		return false;
