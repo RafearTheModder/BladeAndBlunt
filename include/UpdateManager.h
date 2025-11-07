@@ -153,7 +153,8 @@ private:
 	{
 		auto attackState = player->AsActorState()->GetAttackState();
 
-		if (playerCamera->bowZoomedIn) {
+		if (playerCamera->GetRuntimeData2().bowZoomedIn)
+		{
 			return false;
 		}
 
@@ -180,9 +181,7 @@ private:
 
 	static bool IsBowDrawNoZoomCheck(RE::PlayerCharacter* player, RE::PlayerCamera* playerCamera)
 	{
-		auto attackState = player->AsActorState()->GetAttackState();
-
-		if (playerCamera->bowZoomedIn) 
+		if (playerCamera->GetRuntimeData2().bowZoomedIn)
 		{
 			return false;
 		}
@@ -192,6 +191,7 @@ private:
 			return false;
 		}
 
+		auto attackState = player->AsActorState()->GetAttackState();
 		switch (attackState) {
 		case RE::ATTACK_STATE_ENUM::kBowDrawn:
 			{

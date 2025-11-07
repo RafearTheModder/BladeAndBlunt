@@ -23,6 +23,9 @@ namespace Hooks
 			if (runtime == REL::Module::Runtime::AE) {
 				logger::info("Installing ar hook AE");
 				ArmorRatingScaling::InstallArmorRatingHookAE();
+			} else if (runtime == REL::Module::Runtime::VR) {
+				logger::info("Installing ar hook VR");
+				ArmorRatingScaling::InstallArmorRatingHookVR();
 			} else {
 				logger::info("Installing ar hook SE");
 				ArmorRatingScaling::InstallArmorRatingHookSE();	

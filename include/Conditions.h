@@ -50,16 +50,36 @@ namespace Conditions
 	{
 		auto player = RE::PlayerCharacter::GetSingleton();
 
-		auto activeEffects = player->AsMagicTarget()->GetActiveEffectList();
-		RE::EffectSetting* setting = nullptr;
-		for (auto& effect : *activeEffects) {
-			setting = effect ? effect->GetBaseObject() : nullptr;
-			if (setting) {
-				if (setting == a_effect) {
-					return true;
+		if (!REL::Module::IsVR()) {
+			auto activeEffects = player->AsMagicTarget()->GetActiveEffectList();
+			RE::EffectSetting* setting = nullptr;
+			for (auto& effect : *activeEffects) {
+				setting = effect ? effect->GetBaseObject() : nullptr;
+				if (setting) {
+					if (setting == a_effect) {
+						return true;
+					}
 				}
 			}
 		}
+		else
+		{
+			bool matchFound = false;
+			player->AsMagicTarget()->VisitActiveEffects([&](RE::ActiveEffect* effect) -> RE::BSContainer::ForEachResult {
+				RE::EffectSetting* setting = nullptr;
+				if (effect){
+					setting = effect ? effect->GetBaseObject() : nullptr;
+					if (setting) {
+						if (setting == a_effect) {
+							matchFound = true;
+						}
+					}
+				}
+				return RE::BSContainer::ForEachResult::kContinue;
+			});
+			return matchFound;
+		}
+		
 		return false;
 	}
 
