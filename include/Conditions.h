@@ -121,17 +121,36 @@ namespace Conditions
     {
         auto player = RE::PlayerCharacter::GetSingleton();
 
-        auto               activeEffects = player->AsMagicTarget()->GetActiveEffectList();
-        RE::EffectSetting* setting       = nullptr;
-        for (auto& effect : *activeEffects) {
-            setting = effect ? effect->GetBaseObject() : nullptr;
-            if (setting) {
-                if (setting->data.archetype == RE::EffectSetting::Archetype::kEtherealize)
-                {
-                    return true;
-                }
-            }
-        }
+		if (!REL::Module::IsVR()) {
+			auto               activeEffects = player->AsMagicTarget()->GetActiveEffectList();
+			RE::EffectSetting* setting       = nullptr;
+			for (auto& effect : *activeEffects) {
+				setting = effect ? effect->GetBaseObject() : nullptr;
+				if (setting) {
+					if (setting->data.archetype == RE::EffectSetting::Archetype::kEtherealize)
+					{
+						return true;
+					}
+				}
+			}
+		}
+		else
+		{
+			bool matchFound = false;
+			player->AsMagicTarget()->VisitActiveEffects([&](RE::ActiveEffect* effect) -> RE::BSContainer::ForEachResult {
+				RE::EffectSetting* setting = nullptr;
+				if (effect){
+					setting = effect ? effect->GetBaseObject() : nullptr;
+					if (setting) {
+						if (setting->data.archetype == RE::EffectSetting::Archetype::kEtherealize) {
+							matchFound = true;
+						}
+					}
+				}
+				return RE::BSContainer::ForEachResult::kContinue;
+			});
+			return matchFound;
+		}
 
         return false;
     }

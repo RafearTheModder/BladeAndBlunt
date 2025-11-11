@@ -66,7 +66,26 @@ public:
 
 			bool isBlocking = a_event->flags.any(RE::TESHitEvent::Flag::kHitBlocked) || targetActor->IsBlocking();
             bool isWarding  = targetActor->HasKeywordString("MagicWard"sv);
-            bool isEthereal = targetActor->AsMagicTarget()->HasEffectWithArchetype(RE::EffectSetting::Archetype::kEtherealize);
+            bool isEthereal = false;
+			if (!REL::Module::IsVR()) 
+			{
+				isEthereal = targetActor->AsMagicTarget()->HasEffectWithArchetype(RE::EffectSetting::Archetype::kEtherealize);
+			}
+			else
+			{
+				targetActor->AsMagicTarget()->VisitActiveEffects([&](RE::ActiveEffect* effect) -> RE::BSContainer::ForEachResult {
+					RE::EffectSetting* setting = nullptr;
+					if (effect){
+						setting = effect ? effect->GetBaseObject() : nullptr;
+						if (setting) {
+							if (setting->data.archetype == RE::EffectSetting::Archetype::kEtherealize) {
+								isEthereal = true;
+							}
+						}
+					}
+					return RE::BSContainer::ForEachResult::kContinue;
+				});
+			}
 
 			if (((attackingWeapon || powerAttackMelee) || (spellItem && spellItem->hostileCount > 0)) &&
                 !isEthereal) {
